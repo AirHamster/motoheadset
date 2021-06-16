@@ -15,6 +15,7 @@
 #include "esp_spi_flash.h"
 #include "esp_log.h"
 #include "console.h"
+#include "i2s_driver.h"
 
 extern "C" {
 void app_main();
@@ -25,6 +26,7 @@ constexpr uint32_t main_task_delay_ms = 10;
 void app_main(void)
 {
     cli_start();
+    i2s_test_start();
     /* Sheduler started automatically on boot,
         so we don't need to call vTaskStartScheduler()*/
 }
