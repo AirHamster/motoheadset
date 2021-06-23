@@ -16,15 +16,25 @@
 #include "driver/gpio.h"
 #include "esp_system.h"
 #include <math.h>
+#include "SinWaveGenerator.h"
+#include "I2SOutput.h"
+#include "i2s_microphone.h"
+#include "WAVFileReader.h"
 
-#define SAMPLE_RATE (36000)
+#define SAMPLE_RATE (16000)
 #define I2S_NUM (0)
 #define WAVE_FREQ_HZ (100)
 #define PI (3.14159265)
 #define I2S_BCK_IO (GPIO_NUM_13)
-#define I2S_WS_IO (GPIO_NUM_15)
-#define I2S_DO_IO (GPIO_NUM_21)
+#define I2S_WS_IO (GPIO_NUM_21)
+#define I2S_DO_IO (GPIO_NUM_15)
 #define I2S_DI_IO (-1)
+
+i2s_pin_config_t i2sPins = {
+    .bck_io_num = I2S_BCK_IO,
+    .ws_io_num = I2S_WS_IO,
+    .data_out_num = I2S_DO_IO,
+    .data_in_num = -1};
 
 #define SAMPLE_PER_CYCLE (SAMPLE_RATE / WAVE_FREQ_HZ)
 
@@ -69,7 +79,7 @@ static void setup_triangle_sine_waves(int bits)
         }
     }
 
-    i2s_set_clk(static_cast<i2s_port_t>(I2S_NUM), SAMPLE_RATE, (i2s_bits_per_sample_t)bits, (i2s_channel_t)1);
+    i2s_set_clk(static_cast<i2s_port_t>(I2S_NUM), SAMPLE_RATE, (i2s_bits_per_sample_t)bits, (i2s_channel_t)2);
     //Using push
     // for(i = 0; i < SAMPLE_PER_CYCLE; i++) {
     //     if (bits == 16)
@@ -90,12 +100,13 @@ void i2s_test_start(void)
     //using 6 buffers, we need 60-samples per buffer
     //if 2-channels, 16-bit each channel, total buffer is 360*4 = 1440 bytes
     //if 2-channels, 24/32-bit each channel, total buffer is 360*8 = 2880 bytes
+    //loop();
     i2s_config_t i2s_config = {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX), // Only TX
         .sample_rate = SAMPLE_RATE,
         .bits_per_sample = (i2s_bits_per_sample_t)16,
         .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT, //2-channels
-        .communication_format = I2S_COMM_FORMAT_STAND_MSB,
+        .communication_format = I2S_COMM_FORMAT_PCM,
         .dma_buf_count = 6,
         .dma_buf_len = 60,
         .use_apll = false
@@ -107,16 +118,25 @@ void i2s_test_start(void)
         .data_out_num = I2S_DO_IO,
         .data_in_num = I2S_DI_IO //Not used
     };
-    i2s_driver_install(static_cast<i2s_port_t>(I2S_NUM), &i2s_config, 0, NULL);
-    i2s_set_pin(static_cast<i2s_port_t>(I2S_NUM), &pin_config);
+    //i2s_driver_install(static_cast<i2s_port_t>(I2S_NUM), &i2s_config, 0, NULL);
+    //i2s_set_pin(static_cast<i2s_port_t>(I2S_NUM), &pin_config);
 
-    int test_bits = 16;
-    while (1)
-    {
-        setup_triangle_sine_waves(test_bits);
+    // int test_bits = 16;
+    // while (1)
+    // {
+    //     setup_triangle_sine_waves(test_bits);
+    //     vTaskDelay(5000 / portTICK_RATE_MS);
+    //     test_bits += 8;
+    //     if (test_bits > 32)
+    //         test_bits = 16;
+    // }
+    
+    //SampleSource *sampleSource = new SinWaveGenerator(40000, 10000, 0.75);
+    SampleSource *sampleSource = new WAVFileReader("/spiffs/sample.wav");
+    I2SOutput *output = new I2SOutput();
+    output->start(I2S_NUM_0, i2sPins, sampleSource);
+    //output->pump();
+    while (1){
         vTaskDelay(5000 / portTICK_RATE_MS);
-        test_bits += 8;
-        if (test_bits > 32)
-            test_bits = 16;
     }
 }
