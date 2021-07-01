@@ -1,4 +1,4 @@
-idf_component_register(SRCS "files.cpp" "WAVFileReader.cpp" "i2s_microphone.cpp" "i2s_driver.cpp"
+idf_component_register(SRCS "Microphone.cpp" "files.cpp" "WAVFileReader.cpp" "i2s_microphone.cpp" "i2s_driver.cpp"
                             "SinWaveGenerator.cpp"
                             "I2SOutput.cpp"
                             "i2s_microphone.cpp"

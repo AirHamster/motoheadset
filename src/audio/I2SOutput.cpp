@@ -19,7 +19,6 @@ void i2sWriterTask(void *param)
     int availableBytes = 0;
     int buffer_position = 0;
     Frame_t frames[128];
-    ESP_LOGW("I2S", "I2S Task");
     while (true)
     {
         // wait for some data to be requested
@@ -35,6 +34,7 @@ void i2sWriterTask(void *param)
                     if (availableBytes == 0)
                     {
                         // get some frames from the wave file - a frame consists of a 16 bit left and right sample
+                        //ESP_LOGW("I2S", "Get");
                         output->m_sample_generator->getFrames(frames, NUM_FRAMES_TO_SEND);
                         // how maby bytes do we now have to send
                         availableBytes = NUM_FRAMES_TO_SEND * sizeof(uint32_t);

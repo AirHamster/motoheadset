@@ -32,29 +32,52 @@ i2s_pin_config_t i2s_mic_pins = {
     .data_out_num = I2S_PIN_NO_CHANGE,
     .data_in_num = I2S_MIC_SERIAL_DATA};
 
-void setup()
+int16_t raw_samples[SAMPLE_BUFFER_SIZE];
+void i2sMicrophoneTask(void *param)
 {
-    // we need serial output for the plotter
-    //Serial.begin(115200);
-    // start up the I2S peripheral
-    i2s_driver_install(I2S_NUM_1, &i2s_config, 0, NULL);
-    i2s_set_pin(I2S_NUM_1, &i2s_mic_pins);
-}
-
-int32_t raw_samples[SAMPLE_BUFFER_SIZE];
-void loop()
-{
-    setup();
+    //setup();
     while (true)
     {
         // read from the I2S device
         size_t bytes_read = 0;
-        i2s_read(I2S_NUM_1, raw_samples, sizeof(int32_t) * SAMPLE_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
-        int samples_read = bytes_read / sizeof(int32_t);
+        i2s_read(I2S_NUM_1, raw_samples, sizeof(int16_t) * SAMPLE_BUFFER_SIZE, &bytes_read, portMAX_DELAY);
+        int samples_read = bytes_read / sizeof(int16_t);
         // dump the samples out to the serial channel.
         for (int i = 0; i < samples_read; i++)
         {
             printf("%d\n", raw_samples[i]);
         }
     }
+}
+
+void micropone_read(uint16_t *buff, size_t num)
+{
+    size_t bytes_read = 0;
+    int32_t byte;
+    //i2s_read(I2S_NUM_1, buff, sizeof(int16_t) * num, &bytes_read, portMAX_DELAY);
+    i2s_read(I2S_NUM_1, &byte, 4, &bytes_read, portMAX_DELAY);
+    //byte = byte >> 8;
+    if (byte < 0)
+    {
+        byte = 0;
+    }
+    uint16_t b = byte >> 15;
+    //*buff = (int16_t)byte;
+    //int samples_read = bytes_read / sizeof(int16_t);
+    // dump the samples out to the serial channel.
+    // for (int i = 0; i < samples_read; i++)
+    // {
+    *buff = b;
+    //printf("%d\n", b);
+    // }
+}
+
+void microphone_init()
+{
+    // we need serial output for the plotter
+    //Serial.begin(115200);
+    // start up the I2S peripheral
+    i2s_driver_install(I2S_NUM_1, &i2s_config, 0, NULL);
+    i2s_set_pin(I2S_NUM_1, &i2s_mic_pins);
+    //    xTaskCreate(i2sMicrophoneTask, "i2s Microphone Task", 4096, nullptr, 1, nullptr);
 }

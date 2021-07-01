@@ -1,7 +1,8 @@
 //#include <SPIFFS.h>
 //#include <FS.h>
-#include "WAVFileReader.h"
+#include "Microphone.h"
 #include "files.h"
+#include "i2s_microphone.h"
 
 
 #pragma pack(push, 1)
@@ -29,39 +30,24 @@ typedef struct
 } wav_header_t;
 #pragma pack(pop)
 
-WAVFileReader::WAVFileReader(const char *file_name)
+Microphone::Microphone()
 {
-    // if (!SPIFFS.exists(file_name))
-    // {
-    //     println("****** Failed to open file! Have you uploaed the file system?");
-    //     return;
-    // }
+}
 
-    m_file = fopen(file_name, "r");
-    //m_file = SPIFFS.open(file_name, "r");
-    // read the WAV header
-    wav_header_t wav_header;
-    fread((uint8_t *)&wav_header, sizeof(wav_header_t), 1, m_file);
-    // sanity check the bit depth
-    if (wav_header.bit_depth != 16)
+Microphone::~Microphone()
+{
+}
+
+void Microphone::getFrames(Frame_t *frames, int number_frames)
+{
+
+    for (int i = 0; i < number_frames; i++)
     {
-        printf("ERROR: bit depth %d is not supported\n", wav_header.bit_depth);
+        micropone_read((uint16_t *)(&frames[i].left), 1);
+        //frames[i].left = 0;
+        //printf("%d\n", frames[i].left);
     }
-
-    printf("fmt_chunk_size=%d, audio_format=%d, num_channels=%d, sample_rate=%d, sample_alignment=%d, bit_depth=%d, data_bytes=%d\n",
-                  wav_header.fmt_chunk_size, wav_header.audio_format, wav_header.num_channels, wav_header.sample_rate, wav_header.sample_alignment, wav_header.bit_depth, wav_header.data_bytes);
-
-    m_num_channels = wav_header.num_channels;
-    m_sample_rate = wav_header.sample_rate;
-}
-
-WAVFileReader::~WAVFileReader()
-{
-    fclose(m_file);
-}
-
-void WAVFileReader::getFrames(Frame_t *frames, int number_frames)
-{
+    return;
     // fill the buffer with data from the file wrapping around if necessary
     for (int i = 0; i < number_frames; i++)
     {
@@ -73,7 +59,6 @@ void WAVFileReader::getFrames(Frame_t *frames, int number_frames)
         }
         // read in the next sample to the left channel
         fread((uint8_t *)(&frames[i].left), sizeof(int16_t), 1, m_file);
- //       printf("%d\r\n", frames[i].left);
         // if we only have one channel duplicate the sample for the right channel
         if (m_num_channels == 1)
         {

@@ -20,6 +20,7 @@
 #include "I2SOutput.h"
 #include "i2s_microphone.h"
 #include "WAVFileReader.h"
+#include "Microphone.h"
 
 #define SAMPLE_RATE (16000)
 #define I2S_NUM (0)
@@ -101,6 +102,7 @@ void i2s_test_start(void)
     //if 2-channels, 16-bit each channel, total buffer is 360*4 = 1440 bytes
     //if 2-channels, 24/32-bit each channel, total buffer is 360*8 = 2880 bytes
     //loop();
+    microphone_init();
     i2s_config_t i2s_config = {
         .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX), // Only TX
         .sample_rate = SAMPLE_RATE,
@@ -132,7 +134,8 @@ void i2s_test_start(void)
     // }
     
     //SampleSource *sampleSource = new SinWaveGenerator(40000, 10000, 0.75);
-    SampleSource *sampleSource = new WAVFileReader("/spiffs/sample.wav");
+    //SampleSource *sampleSource = new WAVFileReader("/spiffs/sample.wav");
+    SampleSource *sampleSource = new Microphone();
     I2SOutput *output = new I2SOutput();
     output->start(I2S_NUM_0, i2sPins, sampleSource);
     //output->pump();
