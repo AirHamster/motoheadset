@@ -100,6 +100,7 @@ I2SOutput *output = (I2SOutput *)this;
                     {
                         // get some frames from the wave file - a frame consists of a 16 bit left and right sample
                         output->m_sample_generator->getFrames(frames, NUM_FRAMES_TO_SEND);
+                        
                         // how maby bytes do we now have to send
                         availableBytes = NUM_FRAMES_TO_SEND * sizeof(uint32_t);
                         // reset the buffer position back to the start

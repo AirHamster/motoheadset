@@ -43,7 +43,7 @@ void Microphone::getFrames(Frame_t *frames, int number_frames)
 
     for (int i = 0; i < number_frames; i++)
     {
-        micropone_read((uint16_t *)(&frames[i].left), 1);
+        micropone_read((&frames[i].left), 1);
         //frames[i].left = 0;
         //printf("%d\n", frames[i].left);
     }

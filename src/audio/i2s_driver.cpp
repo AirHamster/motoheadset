@@ -133,7 +133,7 @@ void i2s_test_start(void)
     //         test_bits = 16;
     // }
     
-    //SampleSource *sampleSource = new SinWaveGenerator(40000, 10000, 0.75);
+    //SampleSource *sampleSource = new SinWaveGenerator(40000, 10000, 0.4);
     //SampleSource *sampleSource = new WAVFileReader("/spiffs/sample.wav");
     SampleSource *sampleSource = new Microphone();
     I2SOutput *output = new I2SOutput();

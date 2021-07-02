@@ -73,7 +73,7 @@ void WAVFileReader::getFrames(Frame_t *frames, int number_frames)
         }
         // read in the next sample to the left channel
         fread((uint8_t *)(&frames[i].left), sizeof(int16_t), 1, m_file);
- //       printf("%d\r\n", frames[i].left);
+        //printf("%d\n", frames[i].left);
         // if we only have one channel duplicate the sample for the right channel
         if (m_num_channels == 1)
         {

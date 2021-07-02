@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_COMPILER_FLAGS "-Wall -Werror -pedantic")
 set(EXTRA_COMPONENT_DIRS "src"
                          "src/cli"
-                         "src/audio")
+                         "src/audio"
+                         "esp-adf/components")
+                         
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 project(motoheadset)
