@@ -1,4 +1,4 @@
-idf_component_register(SRCS "Microphone.cpp" "files.cpp" "WAVFileReader.cpp" "i2s_microphone.cpp" "i2s_driver.cpp"
+register_component(SRCS "Microphone.cpp" "files.cpp" "WAVFileReader.cpp" "i2s_microphone.cpp" "i2s_driver.cpp"
                             "SinWaveGenerator.cpp"
                             "I2SOutput.cpp"
                             "i2s_microphone.cpp"
@@ -6,4 +6,4 @@ idf_component_register(SRCS "Microphone.cpp" "files.cpp" "WAVFileReader.cpp" "i2
                             "files.cpp"
                     INCLUDE_DIRS "."
                     REQUIRES spiffs)
-spiffs_create_partition_image(files ./files)
+#spiffs_create_partition_image(files ./files)

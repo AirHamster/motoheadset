@@ -8,7 +8,6 @@ set(EXTRA_COMPONENT_DIRS "src"
                          "src/cli"
                          "src/audio"
                          "esp-adf/components")
-                         
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 project(motoheadset)

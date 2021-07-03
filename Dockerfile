@@ -1,1 +1,1 @@
-FROM espressif/idf:v4.3
+FROM espressif/idf:v3.3.5
